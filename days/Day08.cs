@@ -16,7 +16,7 @@ namespace AoC2022.days
 
             // testdata
             {
-                var treeGrid = ReadTreeGrid("data\\d8-test.txt");
+                var treeGrid = ReadTreeGrid("data/d8-test.txt");
 
                 // Story part one - visibility
                 var visibilityGrid = CreateVisibilityGrid(treeGrid);
@@ -34,7 +34,7 @@ namespace AoC2022.days
             }
             // real data
             {
-                var treeGrid = ReadTreeGrid("data\\d8.txt");
+                var treeGrid = ReadTreeGrid("data/d8.txt");
                 
                 // Story part one - visibility
                 var visibilityGrid = CreateVisibilityGrid(treeGrid);
