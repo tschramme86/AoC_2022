@@ -41,6 +41,7 @@ namespace AoC2022.days
         static Regex rxCmdCD = new Regex("\\$ cd (?<DirName>[a-zA-Z0-9/.]+)", RegexOptions.CultureInvariant | RegexOptions.Compiled);
         static Regex rxListingDir = new Regex("dir (?<DirName>[a-zA-Z0-9]+)", RegexOptions.CultureInvariant | RegexOptions.Compiled);
         static Regex rxListingFile = new Regex("(?<FileSize>\\d+) (?<FileName>[a-zA-Z0-9.]+)", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
         public static void Solve()
         {
             Console.WriteLine("*** 7th December ***");

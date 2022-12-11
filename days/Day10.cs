@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace AoC2022.days
 {
-	public class Day10
+	internal class Day10
 	{
 		public static void Solve()
 		{

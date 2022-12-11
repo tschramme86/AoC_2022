@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace AoC2022.days
 {
-	public class Day09
+	internal class Day09
 	{
         struct vec2
         {
