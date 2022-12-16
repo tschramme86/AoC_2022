@@ -61,6 +61,20 @@ namespace AoC2022.days
                 return this.SBDist < V.MDist(this.Sensor!, beacon);
             }
 
+            public IEnumerable<int> GetNoBeaconsInRow(int row)
+            {
+                if(row < this.Sensor.Y - this.SBDist || row > this.Sensor.Y + this.SBDist) yield break;
+
+                var yd = Math.Abs(this.Sensor.Y - row);
+                var xd = this.SBDist - yd;
+                yield return this.Sensor.X;
+                for (var offsetx = 1; offsetx <= xd; offsetx++)
+                {
+                    yield return this.Sensor.X + offsetx;
+                    yield return this.Sensor.X - offsetx;
+                }
+            }
+
             public IEnumerable<V> GetOuterCircle()
             {
                 for(var y=this.Sensor.Y - this.SBDist - 1; y <= this.Sensor.Y + this.SBDist + 1; y++)
@@ -96,31 +110,21 @@ namespace AoC2022.days
             var sensorBeacons = ReadInput(sensorBeaconFile);
             Console.WriteLine($"Checking row {row} for Sensor-Beacon file {sensorBeaconFile} ({sensorBeacons.Count} entries)");
 
-            var positionsWithoutBeacons = new ConcurrentDictionary<int, byte>();
             var beaconsInRow = new HashSet<int>(sensorBeacons.Where(sb => sb.Beacon!.Y == row).Select(sb => sb.Beacon!.X));
-            var center = (int)Math.Round(sensorBeacons.Average(sb => sb.Sensor!.X));
-            var halfWidth = (sensorBeacons.Max(sb => Math.Max(sb.Sensor!.X, sb.Beacon!.X)) -
-                sensorBeacons.Min(sb => Math.Min(sb.Sensor!.Y, sb.Beacon!.Y))) / 2;
-            Parallel.For(0, halfWidth * 2, (offset) =>
+            var noBeaconPositions = new HashSet<int>();
+
+            foreach (var beacon in sensorBeacons)
             {
-                var x1 = center + offset;
-                var x2 = center - offset;
-
-                if (sensorBeacons.Any(sb => !sb.CanOtherBeaconExists(new V(x1, row))) && !beaconsInRow.Contains(x1))
+                foreach(var x in beacon.GetNoBeaconsInRow(row))
                 {
-                    positionsWithoutBeacons.TryAdd(x1, 0);
+                    if(!beaconsInRow.Contains(x)) noBeaconPositions.Add(x);
                 }
+            }
 
-                if (sensorBeacons.Any(sb => !sb.CanOtherBeaconExists(new V(x2, row))) && !beaconsInRow.Contains(x2))
-                {
-                    positionsWithoutBeacons.TryAdd(x2, 0);
-                }
-            });
-
-            Console.WriteLine($"Found {positionsWithoutBeacons.Count} possible positions without beacon in row {row}");
+            Console.WriteLine($"Found {noBeaconPositions.Count} possible positions without beacon in row {row}");
             Console.WriteLine();
 
-            return positionsWithoutBeacons.Count;
+            return noBeaconPositions.Count;
         }
 
         static long FindDistressBeacon(string sensorBeaconFile, bool limitedSearch)
@@ -132,10 +136,11 @@ namespace AoC2022.days
             var maxC = limitedSearch ? 20 : 4000000;
 
             var circles = sensorBeacons.Select(sb => sb.GetOuterCircle()).ToList();
-            var uniqueOuterPositions = circles.SelectMany(circle => circle)
-                .Where(v => v.X >= 0 && v.X <= maxC && v.Y >= 0 && v.Y <= maxC).Distinct().ToList();
+            var positionsNotVisibleByAnySensor = circles.AsParallel()
+                .SelectMany(circle => 
+                    circle.Where(v => v.X >= 0 && v.X <= maxC && v.Y >= 0 && v.Y <= maxC && sensorBeacons.All(sb => sb.CanOtherBeaconExists(v))))
+                .Distinct().ToList();
 
-            var positionsNotVisibleByAnySensor = uniqueOuterPositions.Where(p => sensorBeacons.All(sb => sb.CanOtherBeaconExists(p))).ToList();
             var freq = 0L;
             if(positionsNotVisibleByAnySensor.Any())
             {
