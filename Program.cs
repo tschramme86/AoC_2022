@@ -6,7 +6,7 @@ namespace AoC2022
     {
         static void Main(string[] args)
         {
-            Day14.Solve();
+            Day15.Solve();
 
             Console.WriteLine();
             Console.WriteLine("Press any key to close...");
