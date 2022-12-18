@@ -43,9 +43,12 @@ namespace AoC2022.days
             var maxz = filledGrid.Max(a => a.z);
 
             // bfs search if coordinates are on the outside of the droplet
+            var knownInsides = new HashSet<(int x, int y, int z)>();
             bool bfsIsOutside(int x, int y, int z)
             {
                 if (!excludeInside) return true; // assume everything is outside
+                if (knownInsides.Contains((x, y, z))) return false; // tested previously as inside?
+
                 var nextTests = new Queue<(int x, int y, int z)>(new[] { (x, y, z) });
                 var tested = new HashSet<(int x, int y, int z)>();
 
@@ -60,6 +63,9 @@ namespace AoC2022.days
                     if (!filledGrid.Contains((c.x, c.y, c.z - 1))) if (c.z - 1 < minz) return true; else nextTests.Enqueue((c.x, c.y, c.z - 1));
                     if (!filledGrid.Contains((c.x, c.y, c.z + 1))) if (c.z + 1 > maxz) return true; else nextTests.Enqueue((c.x, c.y, c.z + 1));
                 }
+
+                foreach(var t in tested) knownInsides.Add(t);   // speed up things by caching previous tested insides
+                foreach (var t in nextTests) knownInsides.Add(t);
 
                 return false;
             }
