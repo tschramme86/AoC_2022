@@ -65,7 +65,6 @@ namespace AoC2022.days
                 }
 
                 foreach(var t in tested) knownInsides.Add(t);   // speed up things by caching previous tested insides
-                foreach (var t in nextTests) knownInsides.Add(t);
 
                 return false;
             }
