@@ -20,7 +20,7 @@ namespace AoC2022.days
 
         public static void Solve()
         {
-            Console.WriteLine("*** 21th December ***");
+            Console.WriteLine("*** 21st December ***");
             Console.WriteLine();
 
             Debug.Assert(WhatDoesRootYell("data/d21-test.txt") == 152);
